@@ -15,9 +15,14 @@ func init() {
 	caddy.RegisterModule(Brotli{})
 }
 
+const defaultLevel = 4
+
 // Brotli creates streaming brotli encoders backed by go-brrr.
 type Brotli struct {
-	Level int `json:"level,omitempty"`
+	// Level is the compression level, 0..11. A nil pointer selects the default
+	Level *int `json:"level,omitempty"`
+
+	// LGWin is the base-2 logarithm of the sliding window size, 10..24. Default is 22
 	LGWin int `json:"lgwin,omitempty"`
 }
 
@@ -29,11 +34,12 @@ func (Brotli) CaddyModule() caddy.ModuleInfo {
 }
 
 func (b *Brotli) Provision(_ caddy.Context) error {
-	if b.Level == 0 {
-		b.Level = 4
+	if b.Level == nil {
+		def := defaultLevel
+		b.Level = &def
 	}
-	if b.Level < 0 || b.Level > 11 {
-		return fmt.Errorf("brotli: level must be 0..11, got %d", b.Level)
+	if *b.Level < 0 || *b.Level > 11 {
+		return fmt.Errorf("brotli: level must be 0..11, got %d", *b.Level)
 	}
 	if b.LGWin != 0 && (b.LGWin < 10 || b.LGWin > 24) {
 		return fmt.Errorf("brotli: lgwin must be 10..24, got %d", b.LGWin)
@@ -52,7 +58,7 @@ func (b *Brotli) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 		if err != nil {
 			return d.Errf("invalid level %q: %v", args[0], err)
 		}
-		b.Level = level
+		b.Level = &level
 		if len(args) == 2 {
 			lgwin, err := strconv.Atoi(args[1])
 			if err != nil {
@@ -69,7 +75,7 @@ func (b *Brotli) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 func (Brotli) AcceptEncoding() string { return "br" }
 
 func (b Brotli) NewEncoder() encode.Encoder {
-	w, err := brrr.NewWriterOptions(io.Discard, b.Level, brrr.WriterOptions{LGWin: b.LGWin})
+	w, err := brrr.NewWriterOptions(io.Discard, *b.Level, brrr.WriterOptions{LGWin: b.LGWin})
 	if err != nil {
 		// Provision validates level and lgwin, so this is unreachable.
 		panic(err)
