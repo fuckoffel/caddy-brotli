@@ -1,0 +1,6 @@
+caddy-this
+caddy-ueffel
+
+# Benchmark corpus: third-party, copyrighted HTML. Fetched on demand by
+# fetch-corpus.sh, never committed.
+www/

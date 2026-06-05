@@ -1,0 +1,46 @@
+{
+  "admin": { "disabled": true },
+  "logging": { "logs": { "default": { "level": "ERROR" } } },
+  "apps": {
+    "http": {
+      "servers": {
+        "zstd": {
+          "listen": [":9081"],
+          "automatic_https": { "disable": true },
+          "routes": [{
+            "handle": [
+              {
+                "handler": "encode",
+                "encodings": { "zstd": {"level": "default"} },
+                "prefer": ["zstd"],
+                "minimum_length": 0
+              },
+              {
+                "handler": "file_server",
+                "root": "./www"
+              }
+            ]
+          }]
+        },
+        "br": {
+          "listen": [":9082"],
+          "automatic_https": { "disable": true },
+          "routes": [{
+            "handle": [
+              {
+                "handler": "encode",
+                "encodings": { "br": { "level": 4 } },
+                "prefer": ["br"],
+                "minimum_length": 0
+              },
+              {
+                "handler": "file_server",
+                "root": "./www"
+              }
+            ]
+          }]
+        }
+      }
+    }
+  }
+}
