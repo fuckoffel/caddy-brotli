@@ -38,8 +38,8 @@ func (b *Brotli) Provision(_ caddy.Context) error {
 		def := defaultLevel
 		b.Level = &def
 	}
-	if *b.Level < 0 || *b.Level > 11 {
-		return fmt.Errorf("brotli: level must be 0..11, got %d", *b.Level)
+	if *b.Level < brrr.BestSpeed || *b.Level > brrr.BestCompression {
+		return fmt.Errorf("brotli: level must be %d..%d, got %d", brrr.BestSpeed, brrr.BestCompression, *b.Level)
 	}
 	if b.LGWin != 0 && (b.LGWin < 10 || b.LGWin > 24) {
 		return fmt.Errorf("brotli: lgwin must be 10..24, got %d", b.LGWin)
