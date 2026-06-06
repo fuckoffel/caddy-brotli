@@ -61,3 +61,17 @@ encode {
   "prefer": ["br"]
 }
 ```
+
+## Benchmarks
+
+Measured on an AWS **c7g.large** spot instance: Graviton3 (arm64). See the
+[bench branch](https://github.com/fuckoffel/caddy-brotli/tree/bench/bench) for
+the setup. Comparing `zstd level default` and `brotli level 3` of this plugin and
+[ueffel/caddy-brotli](https://github.com/ueffel/caddy-brotli).
+
+| File             | Raw    | zstd ratio | zstd req/s | br ratio | this plugin req/s | ueffel req/s |
+|------------------|--------|------------|------------|----------|-------------------|--------------|
+| `mdn.html`       | 195 KB | 0.147      | 1698       | 0.138    | **1638**          | 875          |
+| `amazon.html`    | 811 KB | 0.201      | 373        | 0.195    | **369**           | 189          |
+| `nytimes.html`   | 1.0 MB | 0.144      | 393        | 0.130    | **395**           | 191          |
+| `wikipedia.html` | 1.0 MB | 0.197      | 283        | 0.190    | **265**           | 139          |
