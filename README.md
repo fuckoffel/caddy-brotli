@@ -1,3 +1,5 @@
+Urchived in favor of https://github.com/ottenhoff/caddy-brrr
+
 # caddy-brotli
 
 A [Caddy](https://caddyserver.com) v2 encoder module that adds **brotli**
